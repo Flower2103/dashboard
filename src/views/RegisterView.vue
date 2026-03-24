@@ -252,8 +252,6 @@ function validateEmail() {
     errors.email = 'El correo es obligatorio.'
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
     errors.email = 'Ingresa un correo válido.'
-  } else if (emailExists(form.email)) {
-    errors.email = 'Este correo ya está registrado.'
   } else {
     errors.email = ''
   }

@@ -14,8 +14,6 @@ supabase.auth.onAuthStateChange((_event, session) => {
   _user.value = session?.user ?? null
 })
 
-
-
 export function useAuth() {
   const isAuthenticated = computed(() => !!_user.value)
   const user = computed(() => _user.value)
@@ -39,7 +37,9 @@ export function useAuth() {
     error.value = null
     const { data, error: err } = await supabase.auth.signUp({ 
       email, 
-      password })
+      password,
+      options: { data: { full_name: name } }
+     })
     if (err) error.value = err.message
     loading.value = false
     return { data, error: err }
@@ -48,15 +48,6 @@ export function useAuth() {
   async function logout() {
     await supabase.auth.signOut()
     // _user se limpia automáticamente via onAuthStateChange
-  }
-
-  // Registra un nuevo usuario
-  function register(name, email, password) {
-    const exists = _registeredUsers.value.some(u => u.email === email)
-    if (exists) return { ok: false, error: 'Este correo ya está registrado.' }
-
-    _registeredUsers.value.push({ name, email, password })
-    return { ok: true }
   }
 
   function emailExists(email) {
@@ -72,6 +63,6 @@ export function useAuth() {
     loading,
     error,
     emailExists,
-    
+  
   }
 }
