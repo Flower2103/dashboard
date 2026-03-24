@@ -1,31 +1,55 @@
 // src/composables/useAuth.js
 import { ref, computed } from 'vue'
+import { supabase } from '@/lib/supabase'
 
 // Estado GLOBAL compartido (fuera del composable)
 const _user = ref(null)
-const _token = ref(localStorage.getItem('auth_token') || null)
+// Inicializa la sesión al cargar la app
+supabase.auth.getSession().then(({ data }) => {
+  _user.value = data.session?.user ?? null
+})
+
+// Escucha cambios de sesión en tiempo real
+supabase.auth.onAuthStateChange((_event, session) => {
+  _user.value = session?.user ?? null
+})
 
 export function useAuth() {
-  const isAuthenticated = computed(() => !!_token.value)
-
+  const isAuthenticated = computed(() => !!_user.value)
   const user = computed(() => _user.value)
+  const loading = ref(false)
+  const error = ref(null)
 
-  function login(userData, token) {
-    _user.value = userData
-    _token.value = token
-    localStorage.setItem('auth_token', token)
+  async function login(email, password) {
+    loading.value = true
+    error.value = null
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
+    if (err) error.value = err.message
+    loading.value = false
+    return { data, error: err }
   }
 
-  function logout() {
-    _user.value = null
-    _token.value = null
-    localStorage.removeItem('auth_token')
+  async function register(email, password) {
+    loading.value = true
+    error.value = null
+    const { data, error: err } = await supabase.auth.signUp({ email, password })
+    if (err) error.value = err.message
+    loading.value = false
+    return { data, error: err }
+  }
+
+  async function logout() {
+    await supabase.auth.signOut()
+    // _user se limpia automáticamente via onAuthStateChange
   }
 
   return {
     user,
     isAuthenticated,
+    loading,
+    error,
     login,
+    register,
     logout,
   }
 }

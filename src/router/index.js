@@ -1,6 +1,6 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth } from '@/composables/useAuth'
+import { supabase } from '@/lib/supabase'
 
 // Importación lazy de vistas (carga bajo demanda)
 const HomeView      = () => import('@/views/HomeView.vue')
@@ -57,28 +57,30 @@ const router = createRouter({
 })
 
 // ─────────────────────────────────────────
-//  NAVIGATION GUARD — el corazón del sistema
+//  NAVIGATION GUARD — con Supabase
 // ─────────────────────────────────────────
-router.beforeEach((to, from) => {
-  const { isAuthenticated } = useAuth()
-
+router.beforeEach(async (to) => {
   // 1. Actualiza el <title> del documento
   document.title = `${to.meta.title ?? 'App'} | VueAuth`
 
-  // 2. Ruta protegida + usuario NO autenticado → redirige a /login
-  if (to.meta.requiresAuth && !isAuthenticated.value) {
+  // 2. Verifica sesión directamente con Supabase (fuente de verdad)
+  const { data } = await supabase.auth.getSession()
+  const isAuthenticated = !!data.session
+
+  // 3. Ruta protegida + usuario NO autenticado → redirige a /login
+  if (to.meta.requiresAuth && !isAuthenticated) {
     return {
       name: 'login',
-      query: { redirect: to.fullPath }, // guarda la ruta destino
+      query: { redirect: to.fullPath },
     }
   }
 
-  // 3. Ruta guestOnly + usuario YA autenticado → redirige a /dashboard
-  if (to.meta.guestOnly && isAuthenticated.value) {
+  // 4. Ruta guestOnly + usuario YA autenticado → redirige a /dashboard
+  if (to.meta.guestOnly && isAuthenticated) {
     return { name: 'dashboard' }
   }
 
-  // 4. Todo bien, permite la navegación
+  // 5. Todo bien, permite la navegación
   return true
 })
 

@@ -7,7 +7,7 @@
       <div class="welcome-text">
         <p class="welcome-label">Panel de control</p>
         <h1 class="welcome-title">
-          Hola, <span class="highlight">{{ user?.name }}</span> 👋
+          Hola, <span class="highlight">{{ displayName }}</span> 👋
         </h1>
         <p class="welcome-sub">{{ currentDate }} — Todo en orden por aquí.</p>
       </div>
@@ -69,15 +69,15 @@
         <div class="session-info">
           <div class="session-row">
             <span class="session-key">Usuario</span>
-            <span class="session-val">{{ user?.name }}</span>
+            <span class="session-val">{{ displayName }}</span>
           </div>
           <div class="session-row">
             <span class="session-key">Email</span>
-            <span class="session-val">{{ user?.email }}</span>
+            <span class="session-val">{{ userEmail }}</span>
           </div>
           <div class="session-row">
             <span class="session-key">Token</span>
-            <span class="session-val token-val">{{ maskedToken }}</span>
+            <span class="session-val token-val">{{ userId }}</span>
           </div>
           <div class="session-row">
             <span class="session-key">Estado</span>
@@ -102,6 +102,25 @@ import { useAuth } from '@/composables/useAuth'
 const router = useRouter()
 const { user, logout } = useAuth()
 
+// ── Datos reales de Supabase ──
+// user.value.email → email del usuario
+// user.value.user_metadata?.full_name → nombre si usó OAuth
+// user.value.id → UUID del usuario
+
+const displayName = computed(() => {
+  return user.value?.user_metadata?.full_name
+    || user.value?.user_metadata?.name
+    || user.value?.email?.split('@')[0]  // fallback: parte antes del @
+    || 'Usuario'
+})
+
+const userEmail = computed(() => user.value?.email || '—')
+
+const userId = computed(() => {
+  const id = user.value?.id || ''
+  return id ? id.slice(0, 8) + '••••••••' : '—'  // muestra solo los primeros 8 chars
+})
+
 // ── Fecha actual formateada ──
 const currentDate = computed(() =>
   new Date().toLocaleDateString('es-MX', {
@@ -111,12 +130,6 @@ const currentDate = computed(() =>
     day: 'numeric',
   })
 )
-
-// ── Token enmascarado ──
-const maskedToken = computed(() => {
-  const token = localStorage.getItem('auth_token') || ''
-  return token.slice(0, 10) + '••••••••••••'
-})
 
 // ── Datos de estadísticas ──
 const stats = [
@@ -128,16 +141,16 @@ const stats = [
 
 // ── Actividad reciente simulada ──
 const activity = [
-  { type: 'success', msg: 'Inicio de sesión exitoso',        time: 'Justo ahora'   },
-  { type: 'info',    msg: 'Perfil actualizado',              time: 'Hace 2 horas'  },
-  { type: 'warning', msg: 'Intento de acceso denegado',      time: 'Ayer, 11:30pm' },
-  { type: 'success', msg: 'Nueva tarea completada',          time: 'Hace 2 días'   },
-  { type: 'info',    msg: 'Reporte mensual generado',        time: 'Hace 3 días'   },
+  { type: 'success', msg: 'Inicio de sesión exitoso',   time: 'Justo ahora'   },
+  { type: 'info',    msg: 'Perfil actualizado',          time: 'Hace 2 horas'  },
+  { type: 'warning', msg: 'Intento de acceso denegado',  time: 'Ayer, 11:30pm' },
+  { type: 'success', msg: 'Nueva tarea completada',      time: 'Hace 2 días'   },
+  { type: 'info',    msg: 'Reporte mensual generado',    time: 'Hace 3 días'   },
 ]
 
 // ── Logout ──
 async function handleLogout() {
-  logout()
+  await logout()
   await router.push('/login')
 }
 </script>
@@ -187,7 +200,9 @@ async function handleLogout() {
 .highlight {
   background: linear-gradient(135deg, #c8a96e, #e8d5a3);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .welcome-sub {

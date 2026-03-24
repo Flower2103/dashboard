@@ -95,7 +95,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
-const { login } = useAuth()
+const { login, error } = useAuth()
 
 // ── Estado del formulario ──
 const form = reactive({
@@ -139,7 +139,7 @@ function isFormValid() {
   return !errors.email && !errors.password
 }
 
-// ── Login simulado ──
+// ── Login con Supabase ──
 async function handleLogin() {
   errorMsg.value = ''
 
@@ -148,22 +148,21 @@ async function handleLogin() {
   isLoading.value = true
 
   try {
-    // Simulamos una llamada a API con un delay
-    await new Promise(resolve => setTimeout(resolve, 1200))
+    const { error: err } = await login(form.email, form.password)
 
-    // Credenciales de prueba
-    const FAKE_USER = { email: 'admin@vue.com', password: 'vue1234' }
-
-    if (form.email === FAKE_USER.email && form.password === FAKE_USER.password) {
-      // Login exitoso
-      login(
-        { name: 'Admin', email: form.email },
-        'fake-jwt-token-abc123'
-      )
-      await router.push('/dashboard')
+    if (err) {
+      // Traduce los errores de Supabase al español
+      const mensajes = {
+        'Invalid login credentials': 'Credenciales incorrectas. Intenta de nuevo.',
+        'Email not confirmed': 'Confirma tu correo electrónico antes de continuar.',
+        'Too many requests': 'Demasiados intentos. Espera unos minutos.',
+      }
+      errorMsg.value = mensajes[err.message] || err.message
     } else {
-      errorMsg.value = 'Credenciales incorrectas. Intenta de nuevo.'
+      await router.push('/dashboard')
     }
+  } catch (e) {
+    errorMsg.value = 'Error inesperado. Intenta de nuevo.'
   } finally {
     isLoading.value = false
   }
@@ -249,7 +248,9 @@ async function handleLogin() {
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, #e8e4dc, #c8a96e);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: transparent;
   margin: 0 0 0.4rem;
 }
 
