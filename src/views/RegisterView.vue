@@ -164,22 +164,17 @@
         <!-- Paso 2: Éxito -->
         <div v-else key="success" class="success-state">
           <div class="success-icon">✦</div>
-          <h2 class="success-title">¡Cuenta creada!</h2>
+          <h2 class="success-title">¡Revisa tu correo!</h2>
           <p class="success-msg">
-            Bienvenido, <strong>{{ form.name }}</strong>.<br/>
-            Tu cuenta fue registrada exitosamente.
+            Enviamos un enlace de confirmación a <strong>{{ form.email }}</strong>.<br/>
           </p>
-          <div class="success-info">
-            <span class="info-key">Email</span>
-            <span class="info-val">{{ form.email }}</span>
-          </div>
-          <p class="redirect-msg">
-            Redirigiendo al dashboard en
-            <span class="countdown">{{ countdown }}s</span>…
+          <p class="success-msg" style="margin-top: 0.5rem; font-size: 0.85rem">
+             Confirma tu cuenta para poder iniciar sesión.
           </p>
-          <RouterLink to="/dashboard" class="btn-submit" style="text-decoration:none; text-align:center;">
-            Ir ahora →
-          </RouterLink>
+          
+            <RouterLink to="/login" class="btn-submit" style="text-decoration:none; text-align:center;">
+                Ir al login →
+            </RouterLink>
         </div>
 
       </Transition>
@@ -205,7 +200,7 @@ const showConfirm  = ref(false)
 const isLoading    = ref(false)
 const errorMsg     = ref('')
 const success      = ref(false)
-const countdown    = ref(3)
+
 
 // ── Progreso ──
 const progressPercent = computed(() => {
@@ -306,14 +301,6 @@ async function handleRegister() {
 
     // Éxito — mostrar pantalla de confirmación
     success.value = true
-    // Cuenta regresiva y redirección
-    const timer = setInterval(() => {
-      countdown.value--
-      if (countdown.value <= 0) {
-        clearInterval(timer)
-        router.push('/dashboard')
-      }
-    }, 1000)
 
   } finally {
     isLoading.value = false
