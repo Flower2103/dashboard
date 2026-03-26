@@ -8,8 +8,8 @@
     <div class="login-card">
       <!-- Encabezado -->
       <div class="card-header">
-        <span class="card-icon">⬡</span>
-        <h1 class="card-title">Bienvenido</h1>
+        <span class="card-icon">🤿</span>
+        <h1 class="card-title">Bienvenid@</h1>
         <p class="card-subtitle">Ingresa tus credenciales para continuar</p>
       </div>
 
@@ -166,21 +166,21 @@ async function handleLogin() {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(200, 169, 110, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(200, 169, 110, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(53, 65, 110, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 65, 110, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
-  pointer-events: none;
 }
 
 .bg-glow {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(200, 169, 110, 0.08) 0%, transparent 70%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+
+  background: radial-gradient(circle, rgba(42, 157, 143, 0.12) 0%, transparent 70%);
 }
 
 /* ── CARD ── */
@@ -188,13 +188,11 @@ async function handleLogin() {
   position: relative;
   width: 100%;
   max-width: 420px;
-  background: rgba(22, 22, 26, 0.95);
-  border: 1px solid rgba(200, 169, 110, 0.15);
-  border-radius: 16px;
+  background: white;
+  border: 1px solid rgba(53, 65, 110, 0.08);
+  border-radius: 20px;
   padding: 2.5rem 2rem;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.03),
-    0 24px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(53, 65, 110, 0.08);
   animation: cardIn 0.4s ease both;
 }
 
@@ -212,7 +210,7 @@ async function handleLogin() {
 .card-icon {
   display: block;
   font-size: 2rem;
-  color: #c8a96e;
+  color: #6b7a99;
   margin-bottom: 0.75rem;
   animation: pulse 3s ease-in-out infinite;
 }
@@ -225,19 +223,12 @@ async function handleLogin() {
 .card-title {
   font-size: 1.6rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #e8e4dc, #c8a96e);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #1e2540;
   margin: 0 0 0.4rem;
 }
 
 .card-subtitle {
-  color: #6b6560;
-  font-size: 0.88rem;
-  margin: 0;
+  color: #6b7a99;
 }
 
 /* ── ALERTA ── */
@@ -271,11 +262,7 @@ async function handleLogin() {
 }
 
 .field-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #9a938c;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: #6b7a99;
 }
 
 .field-input-wrap {
@@ -294,23 +281,21 @@ async function handleLogin() {
 
 .field-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  background: #f7f9fc;
+  border: 1px solid #e8ecf4;
+  border-radius: 10px;
   padding: 0.65rem 2.75rem 0.65rem 2.5rem;
-  color: #e8e4dc;
+  color: #1e2540;
   font-size: 0.95rem;
-  font-family: inherit;
-  transition: border-color 0.2s, background 0.2s;
-  outline: none;
-  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 .field-input::placeholder { color: #3e3a36; }
 
 .field-input:focus {
-  border-color: rgba(200, 169, 110, 0.5);
-  background: rgba(200, 169, 110, 0.04);
+  border-color: #35416e;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(53, 65, 110, 0.08);
 }
 
 .field--error .field-input {
@@ -338,42 +323,33 @@ async function handleLogin() {
 
 /* ── HINT BOX ── */
 .hint-box {
-  background: rgba(200, 169, 110, 0.06);
-  border: 1px dashed rgba(200, 169, 110, 0.2);
+  background: #f7f9fc;
+  border: 1px dashed #e8ecf4;
   border-radius: 8px;
   padding: 0.65rem 0.9rem;
   font-size: 0.8rem;
-  color: #7a7168;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  color: #6b7a99;
 }
 
 .hint-label { color: #9a938c; }
 
 code {
-  background: rgba(200, 169, 110, 0.12);
-  color: #c8a96e;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  background: rgba(53, 65, 110, 0.08);
+  color: #35416e;
 }
 
 /* ── BOTÓN SUBMIT ── */
 .btn-submit {
   margin-top: 0.5rem;
   padding: 0.8rem;
-  background: linear-gradient(135deg, #c8a96e, #a0834e);
-  color: #0d0d0f;
+  background: #35416e;
+  color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 0.95rem;
+  border-radius: 12px;
   font-weight: 700;
-  font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-  letter-spacing: 0.01em;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
 }
 
 .btn-submit:hover:not(:disabled) {
@@ -384,6 +360,7 @@ code {
 .btn-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Spinner */
