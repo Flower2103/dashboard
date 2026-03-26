@@ -70,45 +70,35 @@ const router = createRouter({
 // ─────────────────────────────────────────
 //  NAVIGATION GUARD — con Supabase
 // ─────────────────────────────────────────
-router.beforeEach(async (to) => {
-  // 1. Actualiza el <title> del documento
+router.beforeEach(async (to, from) => {
   document.title = `${to.meta.title ?? 'App'} | VueAuth`
 
-  // 2. Verifica sesión directamente con Supabase (fuente de verdad)
+  // Detecta si viene del link de confirmación en la URL completa
+  const fullUrl = window.location.href
+  if (fullUrl.includes('access_token') || fullUrl.includes('type=signup') || fullUrl.includes('confirmation_token')) {
+    await supabase.auth.signOut()
+    window.location.replace('/login')
+    return false
+  }
+
   const { data } = await supabase.auth.getSession()
   const session = data.session
   const isAuthenticated = !!session
-  
-
-    // Verifica si el email está confirmado
   const emailConfirmed = !!session?.user?.email_confirmed_at
 
-    // Si llegó desde el link de confirmación, cierra sesión y manda al login
-  if (to.hash.includes('access_token') || to.hash.includes('type=signup')) {
-    await supabase.auth.signOut()
-    return { name: 'login' }
-  }
-
-  // 3. Ruta protegida + usuario NO autenticado → redirige a /login
   if (to.meta.requiresAuth && !isAuthenticated) {
-    return {
-      name: 'login',
-      query: { redirect: to.fullPath },
-    }
+    return { name: 'login', query: { redirect: to.fullPath } }
   }
 
-  // 4. Ruta guestOnly + usuario YA autenticado → redirige a /dashboard
   if (to.meta.requiresAuth && isAuthenticated && !emailConfirmed) {
     await supabase.auth.signOut()
     return { name: 'login' }
   }
 
-  // guestOnly + ya autenticado + email confirmado → dashboard
   if (to.meta.guestOnly && isAuthenticated && emailConfirmed) {
     return { name: 'dashboard' }
   }
 
-  // 5. Todo bien, permite la navegación
   return true
 })
 
