@@ -78,9 +78,16 @@ router.beforeEach(async (to) => {
   const { data } = await supabase.auth.getSession()
   const session = data.session
   const isAuthenticated = !!session
+  
 
     // Verifica si el email está confirmado
   const emailConfirmed = !!session?.user?.email_confirmed_at
+
+    // Si llegó desde el link de confirmación, cierra sesión y manda al login
+  if (to.hash.includes('access_token') || to.hash.includes('type=signup')) {
+    await supabase.auth.signOut()
+    return { name: 'login' }
+  }
 
   // 3. Ruta protegida + usuario NO autenticado → redirige a /login
   if (to.meta.requiresAuth && !isAuthenticated) {
@@ -93,7 +100,7 @@ router.beforeEach(async (to) => {
   // 4. Ruta guestOnly + usuario YA autenticado → redirige a /dashboard
   if (to.meta.requiresAuth && isAuthenticated && !emailConfirmed) {
     await supabase.auth.signOut()
-    return { name: 'dashboard' }
+    return { name: 'login' }
   }
 
   // guestOnly + ya autenticado + email confirmado → dashboard
