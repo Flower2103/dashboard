@@ -13,7 +13,7 @@
         <div v-if="!success" key="form">
           <!-- Header -->
           <div class="card-header">
-            <span class="card-icon">✦</span>
+            <span class="card-icon">🤿</span>
             <h1 class="card-title">Crear cuenta</h1>
             <p class="card-subtitle">Completa los datos para registrarte</p>
           </div>
@@ -173,7 +173,7 @@
           </p>
           
             <RouterLink to="/login" class="btn-submit" style="text-decoration:none; text-align:center;">
-                Ir al login →
+            Ir al login →
             </RouterLink>
         </div>
 
@@ -200,7 +200,7 @@ const showConfirm  = ref(false)
 const isLoading    = ref(false)
 const errorMsg     = ref('')
 const success      = ref(false)
-
+const countdown    = ref(3)
 
 // ── Progreso ──
 const progressPercent = computed(() => {
@@ -321,19 +321,22 @@ async function handleRegister() {
 }
 
 .bg-grid {
-  position: absolute; inset: 0;
+  position: absolute; 
+  inset: 0;
   background-image:
-    linear-gradient(rgba(200,169,110,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(200,169,110,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(53, 65, 110, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 65, 110, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
   pointer-events: none;
 }
 
 .bg-glow {
   position: absolute;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(110,180,232,0.07) 0%, transparent 70%);
-  top: 50%; left: 50%;
+  width: 500px; 
+  height: 500px;
+  background: radial-gradient(circle, rgba(42, 157, 143, 0.12) 0%, transparent 70%);
+  top: 50%; 
+  left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -342,14 +345,12 @@ async function handleRegister() {
 .register-card {
   position: relative;
   width: 100%;
-  max-width: 440px;
-  background: rgba(22, 22, 26, 0.95);
-  border: 1px solid rgba(110, 180, 232, 0.15);
-  border-radius: 16px;
+  max-width: 420%;           /* igual que login-card */
+  background: white;
+  border: 1px solid rgba(53, 65, 110, 0.08);
+  border-radius: 20px;
   padding: 2.5rem 2rem;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.03),
-    0 24px 48px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(53, 65, 110, 0.08);
   animation: cardIn 0.4s ease both;
 }
 
@@ -359,65 +360,67 @@ async function handleRegister() {
 }
 
 /* ── HEADER ── */
-.card-header { text-align: center; margin-bottom: 1.25rem; }
+.card-header { 
+  text-align: center; 
+  margin-bottom: 1.25rem; }
 
 .card-icon {
   display: block;
-  font-size: 1.75rem;
-  color: #6eb4e8;
-  margin-bottom: 0.65rem;
-  animation: spin 8s linear infinite;
+  font-size: 2rem;
+  color: #6b7a99;
+  margin-bottom: 0.75rem;
+  animation: pulse 3s ease-in-out infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
 }
-
+ 
 .card-title {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #e8e4dc, #6eb4e8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 0 0 0.35rem;
+  color: #1e2540;
+  margin: 0 0 0.4rem;
 }
 
-.card-subtitle { color: #6b6560; font-size: 0.88rem; margin: 0; }
+.card-subtitle { 
+  color: #6b7a99;
+  margin: 0; 
+}
 
 /* ── PROGRESO ── */
 .progress-bar {
   height: 3px;
-  background: rgba(255,255,255,0.06);
+  background: #e8ecf4;
   border-radius: 999px;
   margin-bottom: 0.35rem;
-  overflow: hidden;
+  overflow: hidden;;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6eb4e8, #6fcf97);
+  background: linear-gradient(90deg, #35416e, #2a9d8f);
   border-radius: 999px;
   transition: width 0.4s ease;
 }
 
 .progress-label {
   font-size: 0.72rem;
-  color: #4a4540;
+  color: #9a9fae;
   text-align: right;
-  margin-bottom: 1.25rem;
+  margin: 0 0 1.25rem;
 }
 
 /* ── ALERTA ── */
 .alert-error {
-  background: rgba(224,112,112,0.1);
-  border: 1px solid rgba(224,112,112,0.3);
+  background: rgba(224, 112, 112, 0.1);
+  border: 1px solid rgba(224, 112, 112, 0.3);
   color: #e07070;
   border-radius: 8px;
   padding: 0.65rem 1rem;
   font-size: 0.88rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -427,19 +430,29 @@ async function handleRegister() {
 .alert-enter-from, .alert-leave-to { opacity: 0; transform: translateY(-8px); }
 
 /* ── FORM ── */
-.register-form { display: flex; flex-direction: column; gap: 1rem; }
-
-.field { display: flex; flex-direction: column; gap: 0.4rem; }
-
-.field-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #9a938c;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.register-form { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1rem; 
 }
 
-.field-input-wrap { position: relative; display: flex; align-items: center; }
+.field { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.4rem; 
+}
+
+.field-label {
+  color: #6b7a99;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.field-input-wrap { 
+  position: relative; 
+  display: flex; 
+  align-items: center; 
+}
 
 .field-icon {
   position: absolute; left: 0.85rem;
@@ -448,14 +461,14 @@ async function handleRegister() {
 
 .field-input {
   width: 100%;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
+  background: #f7f9fc;
+  border: 1px solid #e8ecf4;
+  border-radius: 10px;
   padding: 0.65rem 2.75rem 0.65rem 2.5rem;
-  color: #e8e4dc;
+  color: #1e2540;
   font-size: 0.95rem;
   font-family: inherit;
-  transition: border-color 0.2s, background 0.2s;
+  transition: all 0.2s ease;
   outline: none;
   box-sizing: border-box;
 }
@@ -463,24 +476,31 @@ async function handleRegister() {
 .field-input::placeholder { color: #3e3a36; }
 
 .field-input:focus {
-  border-color: rgba(110,180,232,0.5);
-  background: rgba(110,180,232,0.04);
+  border-color: #35416e;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(53, 65, 110, 0.08);
 }
 
 .field--error .field-input { border-color: rgba(224,112,112,0.5); }
-.field--ok    .field-input { border-color: rgba(111,207,151,0.4); }
+.field--ok    .field-input { border-color: rgba(42, 157, 143, 0.45); }
 
 .field-error { font-size: 0.8rem; color: #e07070; }
 
 .field-check {
   position: absolute; right: 0.85rem;
-  color: #6fcf97; font-size: 0.9rem; pointer-events: none;
+  color: #2a9d8f; font-size: 0.9rem; pointer-events: none;
 }
 
 .field-toggle {
-  position: absolute; right: 0.75rem;
-  background: none; border: none; cursor: pointer;
-  font-size: 0.95rem; opacity: 0.6; transition: opacity 0.2s; padding: 0;
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  padding: 0;
 }
 .field-toggle:hover { opacity: 1; }
 
@@ -494,45 +514,69 @@ async function handleRegister() {
 
 .strength-segment {
   flex: 1; height: 3px;
-  background: rgba(255,255,255,0.06);
+  background:  #e8ecf4;
   border-radius: 999px;
   transition: background 0.3s;
 }
 
-.strength-label { font-size: 0.75rem; color: #4a4540; white-space: nowrap; }
+.strength-label { 
+  font-size: 0.75rem;
+  color: #9a9fae;
+  white-space: nowrap;
+  font-weight: 500;
+}
 
 /* ── BOTÓN ── */
 .btn-submit {
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   padding: 0.8rem;
-  background: linear-gradient(135deg, #6eb4e8, #4a90c4);
-  color: #0d0d0f;
+  background: #35416e;
+  color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.95rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-  display: block; width: 100%;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  width: 100%;
 }
 
 .btn-submit:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
-.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .spinner {
   display: inline-block;
-  width: 18px; height: 18px;
-  border: 2px solid rgba(13,13,15,0.3);
-  border-top-color: #0d0d0f;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   vertical-align: middle;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+ 
 /* ── LOGIN LINK ── */
-.login-link { font-size: 0.85rem; color: #5a5550; text-align: center; margin: 0; }
-.link { color: #6eb4e8; text-decoration: none; font-weight: 600; }
+.login-link {
+  font-size: 0.85rem;
+  color: #6b7a99;
+  text-align: center;
+  margin: 0;
+ }
+.link {
+  color: #35416e;
+  text-decoration: none;
+  font-weight: 700;
+ }
 .link:hover { text-decoration: underline; }
 
 /* ── SUCCESS ── */
@@ -546,7 +590,8 @@ async function handleRegister() {
 }
 
 .success-icon {
-  font-size: 2.5rem; color: #6fcf97;
+  font-size: 2.5rem;
+  color: #2a9d8f;
   animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -556,14 +601,18 @@ async function handleRegister() {
 }
 
 .success-title {
-  font-size: 1.5rem; font-weight: 700;
-  background: linear-gradient(135deg, #e8e4dc, #6fcf97);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e2540;
   margin: 0;
 }
 
-.success-msg { color: #6b6560; font-size: 0.9rem; line-height: 1.6; margin: 0; }
+.success-msg {
+  color: #6b7a99;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+ }
 .success-msg strong { color: #c8a96e; }
 
 .success-info {
@@ -573,12 +622,6 @@ async function handleRegister() {
   border-radius: 8px; padding: 0.6rem 1rem;
   font-size: 0.85rem;
 }
-
-.info-key { color: #5a5550; }
-.info-val { color: #6fcf97; font-family: monospace; }
-
-.redirect-msg { font-size: 0.82rem; color: #4a4540; margin: 0; }
-.countdown { color: #6eb4e8; font-weight: 700; font-size: 1rem; }
 
 /* ── TRANSICIONES ── */
 .slide-enter-active, .slide-leave-active { transition: all 0.35s ease; }

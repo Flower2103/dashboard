@@ -214,4 +214,10 @@ main {
   opacity: 0;
   transform: translateY(-10px);
 }
+/* ── RESPONSIVE ── */
+@media (max-width: 1080px) {
+  .main-content {
+    padding: 2rem 0.5rem;
+  }
+}
 </style>
