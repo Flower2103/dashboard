@@ -5,8 +5,8 @@
     <nav class="navbar">
       <div class="nav-brand">
         <RouterLink to="/" class="brand-link">
-          <span class="brand-icon">⬡</span>
-          <span class="brand-text">VueAuth</span>
+          <span class="brand-icon">🤿</span>
+          <span class="brand-text">BuceoCom</span>
         </RouterLink>
       </div>
 
@@ -33,7 +33,7 @@
     </nav>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="main-content">
+    <main :class="isHome ? 'main-full' : 'main-content'">
       <RouterView v-slot="{ Component }">
         <Transition name="page" mode="out-in">
           <component :is="Component" />
@@ -45,15 +45,17 @@
 
 <script setup>
 import { computed } from 'vue'
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
+const route  = useRoute()
 const { isAuthenticated, user, logout } = useAuth()
 
 const userName = computed(() =>
   user.value?.user_metadata?.full_name || user.value?.email
   )
+const isHome = computed(() => route.name === 'home')
 
 async function handleLogout() {
   await logout()
@@ -62,6 +64,7 @@ async function handleLogout() {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
 /* Reset global */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -70,8 +73,8 @@ async function handleLogout() {
 }
 
 body {
-  background: #0d0d0f;
-  color: #e8e4dc;
+  background: #f8f9fc;
+  color: #1e2540;
   font-family: 'DM Sans', sans-serif;
 }
 </style>
@@ -79,6 +82,12 @@ body {
 <style scoped>
 #app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
 }
 
 /* ── NAVBAR ── */
@@ -87,33 +96,40 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2.5rem;
-  background: rgba(13, 13, 15, 0.85);
+  background: linear-gradient(135deg, #35416e, #4a5a9c);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 2px 16px rgba(53, 65, 110, 0.2);
   position: sticky;
   top: 0;
   z-index: 100;
 }
-
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .brand-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   text-decoration: none;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   letter-spacing: -0.02em;
+  color: white;
 }
 
 .brand-icon {
-  color: #c8a96e;
   font-size: 1.4rem;
 }
 
 .brand-text {
-  background: linear-gradient(135deg, #e8e4dc, #c8a96e);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: white;
 }
 
 .nav-links {
@@ -124,8 +140,8 @@ body {
 
 .nav-link {
   padding: 0.45rem 1rem;
-  border-radius: 6px;
-  color: #a09a91;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.75);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -138,39 +154,45 @@ body {
 
 .nav-link:hover,
 .nav-link.router-link-active {
-  color: #e8e4dc;
-  background: rgba(255, 255, 255, 0.07);
+  color: white;
+  background: rgba(255,255,255,0.12);
 }
 
 .nav-link--cta {
-  background: linear-gradient(135deg, #c8a96e, #a0834e);
-  color: #0d0d0f !important;
+  background: white;
+  color: #35416e !important;
   font-weight: 600;
   padding: 0.45rem 1.25rem;
 }
 
 .nav-link--cta:hover {
-  opacity: 0.9;
-  background: linear-gradient(135deg, #c8a96e, #a0834e) !important;
+
+  background: #f0f2f8 !important;
+  color: #35416e !important;
 }
 
 .nav-user {
   font-size: 0.85rem;
-  color: #c8a96e;
-  padding: 0 0.75rem;
-  border-left: 1px solid rgba(200, 169, 110, 0.3);
-  border-right: 1px solid rgba(200, 169, 110, 0.3);
+  color: rgba(255,255,255,0.9);
+  padding: 0 0.85rem;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  border-right: 1px solid rgba(255,255,255,0.2);
 }
 
 .nav-link--logout {
-  color: #e07070 !important;
+  color: #ffaaaa !important;
 }
 
 .nav-link--logout:hover {
-  background: rgba(224, 112, 112, 0.1) !important;
+  background: rgba(255,100,100,0.15) !important;
 }
 
 /* ── MAIN ── */
+.main-full {
+  /* Home: sin restricción de ancho ni padding */
+  width: 100%;
+}
+
 .main-content {
   max-width: 1100px;
   margin: 0 auto;
