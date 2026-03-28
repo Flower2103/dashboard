@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
+
 // Estado GLOBAL compartido (fuera del composable)
 const _user = ref(null)
 // Inicializa la sesión al cargar la app
@@ -10,7 +11,8 @@ supabase.auth.getSession().then(({ data }) => {
 })
 
 // Escucha cambios de sesión en tiempo real
-supabase.auth.onAuthStateChange((_event, session) => {
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') return  // ← ignorar este evento
   _user.value = session?.user ?? null
 })
 
@@ -54,12 +56,24 @@ export function useAuth() {
     return _registeredUsers.value.some(u => u.email === email)
   }
 
+async function resetPassword(email) {
+  loading.value = true
+  error.value = null
+  const { data, error: err } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`, // ruta donde el usuario cambia su contraseña
+  })
+  if (err) error.value = err.message
+  loading.value = false
+  return { data, error: err }
+}
+
   return {
     user,
     isAuthenticated,
     login,
     logout,
     register,
+    resetPassword,
     loading,
     error,
     emailExists,

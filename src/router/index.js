@@ -49,6 +49,18 @@ const routes = [
     },
   },
   {
+      // ✅ Reset password: excluida del guard de token y de guestOnly
+    path: '/reset-password',
+    name: 'reset-password',
+    component: () => import('@/views/ResetPassView.vue'),
+    meta: {
+      title: 'Nueva contraseña',
+      requiresAuth: false,
+      isResetPassword: true, // 👈 flag para identificarla en el guard
+    },
+  },
+
+  {
     // Catch-all: cualquier ruta no definida → 404
     path: '/:pathMatch(.*)*',
     name: 'not-found',
@@ -73,13 +85,20 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   document.title = `${to.meta.title ?? 'App'} | VueAuth`
 
+    if (to.meta.isResetPassword) {
+    return true
+  }
   // Detecta si viene del link de confirmación en la URL completa
   const fullUrl = window.location.href
-  if (fullUrl.includes('access_token') || fullUrl.includes('type=signup') || fullUrl.includes('confirmation_token')) {
-    await supabase.auth.signOut()
-    window.location.replace('/login')
-    return false
-  }
+
+if (
+  (fullUrl.includes('access_token') || fullUrl.includes('type=signup') || fullUrl.includes('confirmation_token')) &&
+  !fullUrl.includes('type=recovery')
+) {
+  await supabase.auth.signOut()
+  window.location.replace('/login')
+  return false
+}
 
   const { data } = await supabase.auth.getSession()
   const session = data.session

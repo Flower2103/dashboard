@@ -73,6 +73,11 @@
           <code>admin@vue.com</code> / <code>vue1234</code>
         </div>
 
+        <!-- Botón enlace recuperar -->
+        <button type="button" class="btn-forgot" @click="showForgot = true">
+          ¿Olvidaste tu contraseña?
+        </button>
+
         <!-- Botón submit -->
         <button
           type="submit"
@@ -85,6 +90,66 @@
         </button>
 
       </form>
+      <!-- Recuperar -->
+      <Transition name="overlay">
+        <div v-if="showForgot" class="forgot-overlay" @click.self="closeForgot">
+          <Transition name="modal">
+            <div class="forgot-card" v-if="showForgot">
+ 
+              <div class="forgot-header">
+                <span class="forgot-icon">📩</span>
+                <h2 class="forgot-title">Recuperar contraseña</h2>
+                <p class="forgot-desc">
+                  Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+                </p>
+              </div>
+
+              <!-- Éxito -->
+              <Transition name="alert">
+                <div v-if="forgotSuccess" class="alert-success">
+                  ✅ Revisa tu bandeja, te enviamos el enlace.
+                </div>
+              </Transition>
+ 
+              <!-- Campo email -->
+              <div v-if="!forgotSuccess" class="field" :class="{ 'field--error': forgotError }">
+                <label for="forgot-email" class="field-label">Correo electrónico</label>
+                <div class="field-input-wrap">
+                  <span class="field-icon">✉</span>
+                  <input
+                    id="forgot-email"
+                    v-model.trim="forgotEmail"
+                    type="email"
+                    class="field-input"
+                    placeholder="usuario@ejemplo.com"
+                    @keyup.enter="handleForgot"
+                  />
+                </div>
+                <span v-if="forgotError" class="field-error">{{ forgotError }}</span>
+              </div>
+
+              <!-- Acciones -->
+              <div class="forgot-actions">
+                <button type="button" class="btn-cancel" @click="closeForgot">
+                  {{ forgotSuccess ? 'Cerrar' : 'Cancelar' }}
+                </button>
+                <button
+                  v-if="!forgotSuccess"
+                  type="button"
+                  class="btn-submit"
+                  :disabled="isLoading"
+                  @click="handleForgot"
+                >
+                  <span v-if="!isLoading">Enviar enlace →</span>
+                  <span v-else class="spinner"></span>
+                </button>
+              </div>
+ 
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+
     </div>
   </div>
 </template>
@@ -96,7 +161,7 @@ import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
 const route = useRoute()
-const { login, loading: isLoading } = useAuth()
+const { login, resetPassword, loading: isLoading } = useAuth()
 
 // ── Estado del formulario ──
 const form = reactive({ email: '', password: '' })
@@ -104,6 +169,11 @@ const errors = reactive({ email: '', password: '' })
 const showPassword = ref(false)
 const errorMsg = ref('')
 
+// ── Estado modal recuperación ──
+const showForgot = ref(false)
+const forgotEmail = ref('')
+const forgotError = ref('')
+const forgotSuccess = ref(false)
 
 // ── Validaciones individuales ──
 function validateEmail() {
@@ -146,6 +216,39 @@ async function handleLogin() {
   }
 
   await router.push(route.query.redirect || '/dashboard')
+}
+
+// ── Recuperar contraseña ──
+function closeForgot() {
+  showForgot.value = false
+  setTimeout(() => {
+    forgotEmail.value = ''
+    forgotError.value = ''
+    forgotSuccess.value = false
+  }, 300)
+}
+
+async function handleForgot() {
+  forgotError.value = ''
+ 
+  if (!forgotEmail.value) {
+    forgotError.value = 'El correo es obligatorio.'
+    return
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forgotEmail.value)) {
+    forgotError.value = 'Ingresa un correo válido.'
+    return
+  }
+ 
+  const { error: err } = await resetPassword(forgotEmail.value)
+ 
+  if (err) {
+    forgotError.value = 'No se pudo enviar el correo. Intenta de nuevo.'
+    return
+  }
+ 
+  forgotSuccess.value = true
+  setTimeout(closeForgot, 3500)
 }
 </script>
 
@@ -245,6 +348,19 @@ async function handleLogin() {
   gap: 0.5rem;
 }
 
+/* ── ALERTA ÉXITO ── */
+.alert-success {
+  background: rgba(42, 157, 143, 0.1);
+  border: 1px solid rgba(42, 157, 143, 0.3);
+  color: #2a9d8f;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .alert-enter-active, .alert-leave-active { transition: all 0.3s ease; }
 .alert-enter-from, .alert-leave-to { opacity: 0; transform: translateY(-8px); }
 
@@ -263,6 +379,7 @@ async function handleLogin() {
 
 .field-label {
   color: #6b7a99;
+  font-size: 0.88rem;
 }
 
 .field-input-wrap {
@@ -290,9 +407,10 @@ async function handleLogin() {
   transition: all 0.2s ease;
 }
 
-.field-input::placeholder { color: #3e3a36; }
+.field-input::placeholder { color: #b0aaa5; }
 
 .field-input:focus {
+  outline: none;
   border-color: #35416e;
   background: white;
   box-shadow: 0 0 0 3px rgba(53, 65, 110, 0.08);
@@ -336,7 +454,27 @@ async function handleLogin() {
 code {
   background: rgba(53, 65, 110, 0.08);
   color: #35416e;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
 }
+
+/* ── LINK OLVIDÉ CONTRASEÑA ── */
+.btn-forgot {
+  background: none;
+  border: none;
+  color: #6b7a99;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: right;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  align-self: flex-end;
+  margin-top: -0.4rem;
+  transition: color 0.2s;
+}
+
+.btn-forgot:hover { color: #35416e; }
 
 /* ── BOTÓN SUBMIT ── */
 .btn-submit {
@@ -347,9 +485,12 @@ code {
   border: none;
   border-radius: 12px;
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s;
   letter-spacing: 0.02em;
+  width: 100%;
+
 }
 
 .btn-submit:hover:not(:disabled) {
@@ -378,4 +519,91 @@ code {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ── MODAL RECUPERAR CONTRASEÑA ── */
+.forgot-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 37, 64, 0.45);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+ 
+.forgot-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 25px 60px rgba(30, 37, 64, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+ 
+.forgot-header {
+  text-align: center;
+}
+ 
+.forgot-icon {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.6rem;
+}
+ 
+.forgot-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e2540;
+  margin: 0 0 0.4rem;
+}
+ 
+.forgot-desc {
+  color: #6b7a99;
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.5;
+}
+ 
+.forgot-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+ 
+.btn-cancel {
+  flex: 1;
+  padding: 0.75rem;
+  background: #f7f9fc;
+  border: 1px solid #e8ecf4;
+  border-radius: 10px;
+  color: #6b7a99;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+ 
+.btn-cancel:hover {
+  background: #e8ecf4;
+  color: #35416e;
+}
+ 
+.forgot-actions .btn-submit {
+  flex: 1.5;
+  margin-top: 0;
+}
+ 
+/* Transición overlay */
+.overlay-enter-active, .overlay-leave-active { transition: opacity 0.3s ease; }
+.overlay-enter-from, .overlay-leave-to { opacity: 0; }
+ 
+/* Transición modal */
+.modal-enter-active { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.modal-leave-active { transition: all 0.2s ease; }
+.modal-enter-from { opacity: 0; transform: scale(0.9) translateY(10px); }
+.modal-leave-to   { opacity: 0; transform: scale(0.95) translateY(5px); }
 </style>

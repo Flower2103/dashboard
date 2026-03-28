@@ -473,7 +473,7 @@ async function handleRegister() {
   box-sizing: border-box;
 }
 
-.field-input::placeholder { color: #3e3a36; }
+.field-input::placeholder { color: #b0aaa5;; }
 
 .field-input:focus {
   border-color: #35416e;

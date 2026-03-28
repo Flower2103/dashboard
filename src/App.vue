@@ -12,22 +12,24 @@
 
       <div class="nav-links">
         <RouterLink to="/" class="nav-link">Inicio</RouterLink>
+        <template v-if="!isResetPassword">
+          <!-- Si NO está autenticado -->
+          <template v-if="!isAuthenticated">
+            <RouterLink to="/login" class="nav-link nav-link--cta">
+              Iniciar sesión
+            </RouterLink>
+            <RouterLink to="/register" class="nav-link">Registrarse</RouterLink>
+          </template>
 
-        <!-- Si NO está autenticado -->
-        <template v-if="!isAuthenticated">
-          <RouterLink to="/login" class="nav-link nav-link--cta">
-            Iniciar sesión
-          </RouterLink>
-          <RouterLink to="/register" class="nav-link">Registrarse</RouterLink>
-        </template>
+          <!-- Si SÍ está autenticado -->
+          <template v-else>
+            <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
+            <span class="nav-user">{{ userName }}</span>
+            <button class="nav-link nav-link--logout" @click="handleLogout">
+              Cerrar sesión
+            </button>
+          </template>
 
-        <!-- Si SÍ está autenticado -->
-        <template v-else>
-          <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
-          <span class="nav-user">{{ userName }}</span>
-          <button class="nav-link nav-link--logout" @click="handleLogout">
-            Cerrar sesión
-          </button>
         </template>
       </div>
     </nav>
@@ -51,6 +53,7 @@ import { useAuth } from '@/composables/useAuth'
 const router = useRouter()
 const route  = useRoute()
 const { isAuthenticated, user, logout } = useAuth()
+const isResetPassword = computed(() => route.name === 'reset-password')
 
 const userName = computed(() =>
   user.value?.user_metadata?.full_name || user.value?.email
