@@ -61,6 +61,17 @@ const routes = [
   },
 
   {
+    path: '/email-confirmed',
+    name: 'email-confirmed',
+    component: () => import('@/views/EmailConfirmedView.vue'),
+    meta: {
+    title: 'Correo confirmado',
+    requiresAuth: false,
+    isResetPassword: true, // reutiliza el flag para saltarse el guard
+   },
+  },
+
+  {
     // Catch-all: cualquier ruta no definida → 404
     path: '/:pathMatch(.*)*',
     name: 'not-found',
@@ -96,7 +107,7 @@ if (
   !fullUrl.includes('type=recovery')
 ) {
   await supabase.auth.signOut()
-  window.location.replace('/login')
+  window.location.replace('/email-confirmed')
   return false
 }
 
